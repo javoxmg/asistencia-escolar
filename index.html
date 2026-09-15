@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
     <meta name="description" content="App para pasar lista de asistencia">
-    <link rel="manifest" href="manifest.json?v=4">
+    <link rel="manifest" href="manifest.json?v=5">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <title>Asistencia Escolar</title>
@@ -301,7 +301,7 @@
         if ('serviceWorker' in navigator) {
             // updateViaCache: 'none' evita que el navegador sirva una copia cacheada
             // antigua del service worker al comprobar actualizaciones
-            navigator.serviceWorker.register('sw.js?v=4', { updateViaCache: 'none' });
+            navigator.serviceWorker.register('sw.js?v=5', { updateViaCache: 'none' });
         }
         
         const groups = {
@@ -543,7 +543,9 @@
                 }
             });
             
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            // El BOM (﻿) al principio hace que Excel detecte correctamente
+            // la codificación UTF-8 y muestre bien las tildes y la Ñ
+            const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
@@ -597,7 +599,7 @@
                 csvContent += `"${r.date}","${r.group}","${r.student}","${r.estado}"\n`;
             });
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
