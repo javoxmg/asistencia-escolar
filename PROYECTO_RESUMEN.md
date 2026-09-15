@@ -4,7 +4,7 @@
 
 App Progressive Web App (PWA) para gestionar la asistencia de alumnos en clase. Se puede instalar en Android como una app nativa. Los datos se guardan localmente en el móvil sin conexión a servidor.
 
-**Estado:** Completo y listo para desplegar en GitHub Pages
+**Estado:** Desplegado en GitHub Pages y en producción
 
 ---
 
@@ -19,18 +19,25 @@ App Progressive Web App (PWA) para gestionar la asistencia de alumnos en clase. 
   - **R** (naranja) = Retraso
 - Los datos se guardan automáticamente en `localStorage`
 
-### 2. Descarga de CSV
+### 2. Botón "Pasar Lista" (marcado automático de presentes)
+- Como lo habitual es que la mayoría de alumnos asista, solo hace falta marcar las faltas y los retrasos
+- Botón verde "✅ Pasar Lista" junto al de descargar CSV
+- Al pulsarlo, marca automáticamente como **Presente** a todos los alumnos del grupo que aún no tengan ningún estado asignado
+- No modifica a los alumnos ya marcados como falta o retraso
+- Se puede pulsar varias veces sin problema (es idempotente)
+
+### 3. Descarga de CSV
 - Botón "Descargar CSV" que exporta solo faltas y retrasos
 - Formato: Fecha, Grupo, Alumno, Estado
 - Abre automáticamente el descargador del navegador
 
-### 3. Histórico
+### 4. Histórico
 - Pestaña "Histórico" que muestra todos los días registrados
 - Muestra resumen: número de faltas y retrasos por día
 - Click en un día = abre modal con detalles por grupo
 - Organizado por grupo y tipo de incidencia
 
-### 4. Funcionalidad PWA
+### 5. Funcionalidad PWA
 - Instalable en Android desde Chrome (botón "Instalar")
 - Funciona offline gracias al Service Worker
 - Icono personalizado en la pantalla de inicio
@@ -156,6 +163,7 @@ Matemáticas II - 2BCB_DE LA FUENTE ALONSO, RUBÉN_2026-09-15 = "absent"
 - Funciones principales:
   - `initializeDateAndGroups()` - Inicializa fecha y grupos
   - `generateStudentRows(group)` - Genera filas de alumnos
+  - `markAttendanceBtn` (listener) - Marca como Presente a los alumnos sin estado asignado
   - `loadHistory()` - Carga histórico de asistencias
   - `showDetail(date)` - Muestra detalles de un día
   - Download CSV
@@ -170,6 +178,7 @@ Matemáticas II - 2BCB_DE LA FUENTE ALONSO, RUBÉN_2026-09-15 = "absent"
 - `install`: cachea archivos iniciales
 - `activate`: limpia caches antiguos
 - `fetch`: sirve desde cache, con fallback a red
+- `CACHE_NAME`: `asistencia-v2` (se incrementa en cada cambio relevante de `index.html` para forzar la actualización en los móviles con la app instalada)
 
 ---
 
@@ -232,4 +241,4 @@ Si necesitas:
 
 **Última actualización:** 15 de septiembre de 2026  
 **Estado:** Producción  
-**Versión:** 1.0
+**Versión:** 1.1 (añadido botón "Pasar Lista" para marcado automático de presentes)
