@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="App para pasar lista de asistencia">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
+    <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
+    <title>Asistencia Escolar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .header {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 0.5px solid #e5e5e5;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1rem;
+            border-bottom: 0.5px solid #e5e5e5;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .tab-btn.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 0.5px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        button {
+            padding: 8px 16px;
+            background: white;
+            border: 0.5px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background: #f9f9f9;
+            border-color: #999;
+        }
+        
+        .student-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+            border: 0.5px solid #e5e5e5;
+            margin-bottom: 8px;
+        }
+        
+        .student-name {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .button-group-inline {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .status-btn {
+            width: 32px;
+            height: 32px;
+            border: 0.5px solid #e5e5e5;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .status-btn.present {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        
+        .status-btn.absent {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+        
+        .status-btn.late {
+            background: #f59e0b;
+            color: white;
+            border-color: #f59e0b;
+        }
+        
+        .history-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 0.5px solid #e5e5e5;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .history-item:hover {
+            border-color: #999;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .history-date {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .history-stats {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            width: 90%;
+        }
+        
+        .modal-header {
+            font-weight: 500;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="font-size: 24px; margin-bottom: 0.5rem;">Asistencia Escolar</h1>
+            <p style="color: #666; font-size: 14px;">Gestiona la asistencia de tus alumnos</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="lista">Pasar Lista</button>
+            <button class="tab-btn" data-tab="historico">Histórico</button>
+        </div>
+        
+        <div id="lista" class="tab-content active">
+            <div class="form-group">
+                <label>Fecha</label>
+                <input type="text" id="dateInput" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label>Grupo</label>
+                <select id="groupSelect">
+                    <option value="">Selecciona un grupo</option>
+                </select>
+            </div>
+            
+            <div id="studentsContainer" style="display: none;">
+                <div class="button-group">
+                    <button id="downloadBtn">📥 Descargar CSV</button>
+                </div>
+                <div id="studentsList"></div>
+            </div>
+            
+            <div id="emptyState" class="empty-state">
+                Selecciona un grupo para comenzar
+            </div>
+        </div>
+        
+        <div id="historico" class="tab-content">
+            <div id="historyContainer"></div>
+        </div>
+    </div>
+    
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="detailDate"></span>
+                <button class="close-btn" onclick="closeDetailModal()">✕</button>
+            </div>
+            <div id="detailContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+        
+        const groups = {
+            "Matemáticas II - 2BCB": ["DE LA FUENTE ALONSO, RUBÉN", "DEL RÍO OLMEDO, CARLA", "DIEZ URCARREGUI, PAOLA", "GÓMEZ GARCÍA, RODRIGO", "MARCOS MANCHÓN, RUBÉN", "MORO EMPERADOR, DIEGO", "PLAZA PÉREZ, JORGE", "PRADOS TORRES, HUGO", "ROMERO MUSLARES, DANIEL"],
+            "Matemáticas Aplicadas a las Ciencias Sociales I - 1BHS": ["AGUADO HUSILLOS, MATEO", "ALEJO PÉREZ, JOSÉ ROBERTO", "ALONSO ALONSO, MIGUEL", "ABIA ENRÍQUEZ, VEGA", "ATOCHE SENDINO, CARMEN", "AZPILETA GALLARDO, JIMENA", "CALLEJA MIGUEL, ALBA", "CAMPO ÁLVAREZ, THAIS", "CASÍN RUBIO, SAMUEL", "CUESTA MERINO, MARCOS", "DE CASTRO PÉREZ, LEYRE", "DE LA FUENTE ABARQUERO, EMMA", "GARCÍA HERRARTE, NAIRA", "GONZALEZ MORENO, NATALIA", "HERRERO DE FRÁDEL, DIEGO", "HERRERO CISNEROS, RODRIGO", "IGLESIAS MORENO, LUCÍA", "INDICOL MAYORDOMO, IRENE", "PANIAGUA RESA, LUCÍA CARLOTA", "PARDO SOLÁ, NACHO", "PARIENTE ABIA, LUCÍA", "PARIENTE ABIA, ZAIRA", "QUIÑONEZ ÁLVAREZ, DANIEL", "RENEDO VARGAS, ALEJANDRA", "RODRÍGUEZ MARTÍN, EMMA", "RODRÍGUEZ SALAZAR, DOUGLAS YANILO", "SALVADOR LÓPEZ, ÁLVARO", "ZAPATERO SALVADOR, ADRIANA"],
+            "Matemáticas - 03A, 03B": ["ANDRÉS GARCÍA, ALMA", "ANTOLÍN AMOR, IKER", "ANTOLÍN BRAZ, BÁRBARA LINA", "CABRERA ROJO, HUGO", "CALLE VALVERDE, ARIADNE", "CALVO SASTRE, DAKOTA", "CAMPOS CALLEJA, ANDRÉS", "CHOAIBI ALVAREZ, VIDAL", "EL FADILY, ROUMAISSA", "GÓMEZ REBOLLEDO, JOEL", "GUTIÉRREZ IGLESIAS, ROBERTO", "HERRERAS GARCÍA, NAHIA", "LAMNINI KARMOUCHE, RAJAA", "MACHO ARÍA, ROCÍO", "MACHÓN MANGAS, JOEL", "PÉREZ BERNARDO, ELENA", "SALVADOR LÓPEZ, DARÍO", "TORIBIO CARDEÑOSO, IVÁN", "ULACIA FERRER, ITZIAR"],
+            "Conocimiento de las Matemáticas - 03A, 03D": ["AMOR ROJO, NEREA", "BOUTACHKOURT ZAOUATI, ABDELKARIM", "CABRERA ROJO, HUGO", "CEINOS ARCONADA, SARA", "GUANTES MERINO, PAOLA", "GUTIÉRREZ IGLESIAS, ROBERTO", "ORE HUANCA, IKER ISMAEL", "ROJO PÉREZ, MIRIAM", "SANZ CANO, INÉS", "TORIBIO CARDEÑOSO, IVÁN"],
+            "Conocimiento de las Matemáticas - 02B, 02D": ["ACOSTA PEDROSA, GABRIEL", "ANDRÉS GARCÍA, MANUEL", "EL MAHFOUDI BRAHIM, BRAHIM", "GABARRE JIMÉNEZ, REINALDO", "GARCÍA FRÍAS, IZAN", "GONZALEZ GUTIÉRREZ, ALEJANDRO", "POLVOROSA GÓMEZ, SAÚL", "POZA VALLE, RUBÉN", "RODRÍGUEZ MORÁN, LUCAS", "RUBIO MORO, ÁLVARO"]
+        };
+        
+        const dateInput = document.getElementById('dateInput');
+        const groupSelect = document.getElementById('groupSelect');
+        const studentsList = document.getElementById('studentsList');
+        const emptyState = document.getElementById('emptyState');
+        const studentsContainer = document.getElementById('studentsContainer');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const historyContainer = document.getElementById('historyContainer');
+        const detailModal = document.getElementById('detailModal');
+        const detailDate = document.getElementById('detailDate');
+        const detailContent = document.getElementById('detailContent');
+        
+        function formatDate(date) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('es-ES', options);
+        }
+        
+        function initializeDateAndGroups() {
+            const today = new Date();
+            dateInput.value = formatDate(today);
+            
+            Object.keys(groups).forEach(group => {
+                const option = document.createElement('option');
+                option.value = group;
+                option.textContent = group;
+                groupSelect.appendChild(option);
+            });
+        }
+        
+        function generateStudentRows(group) {
+            studentsList.innerHTML = '';
+            const students = groups[group];
+            const today = new Date().toISOString().split('T')[0];
+            
+            students.forEach((student) => {
+                const storageName = `${group}_${student}_${today}`;
+                const row = document.createElement('div');
+                row.className = 'student-row';
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'student-name';
+                nameSpan.textContent = student;
+                
+                const buttonGroup = document.createElement('div');
+                buttonGroup.className = 'button-group-inline';
+                
+                const states = [
+                    { value: 'present', label: 'P' },
+                    { value: 'absent', label: 'F' },
+                    { value: 'late', label: 'R' }
+                ];
+                
+                let currentState = null;
+                try {
+                    const stored = localStorage.getItem(storageName);
+                    if (stored) currentState = stored;
+                } catch (e) {}
+                
+                states.forEach(state => {
+                    const btn = document.createElement('button');
+                    btn.className = `status-btn ${currentState === state.value ? state.value : ''}`;
+                    btn.textContent = state.label;
+                    btn.title = state.value === 'present' ? 'Presente' : state.value === 'absent' ? 'Falta' : 'Retraso';
+                    
+                    btn.addEventListener('click', () => {
+                        if (currentState === state.value) {
+                            localStorage.removeItem(storageName);
+                            currentState = null;
+                        } else {
+                            localStorage.setItem(storageName, state.value);
+                            currentState = state.value;
+                        }
+                        
+                        states.forEach(s => {
+                            const idx = states.indexOf(s);
+                            const buttons = buttonGroup.querySelectorAll('button');
+                            buttons[idx].className = `status-btn ${currentState === s.value ? s.value : ''}`;
+                        });
+                    });
+                    
+                    buttonGroup.appendChild(btn);
+                });
+                
+                row.appendChild(nameSpan);
+                row.appendChild(buttonGroup);
+                studentsList.appendChild(row);
+            });
+        }
+        
+        function loadHistory() {
+            historyContainer.innerHTML = '';
+            const allKeys = Object.keys(localStorage);
+            const dateGroups = {};
+            
+            allKeys.forEach(key => {
+                const parts = key.split('_');
+                if (parts.length > 1) {
+                    const date = parts[parts.length - 1];
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+                        if (!dateGroups[date]) dateGroups[date] = [];
+                        dateGroups[date].push(key);
+                    }
+                }
+            });
+            
+            const sortedDates = Object.keys(dateGroups).sort().reverse();
+            
+            if (sortedDates.length === 0) {
+                historyContainer.innerHTML = '<div class="empty-state">No hay registros de asistencia</div>';
+                return;
+            }
+            
+            sortedDates.forEach(date => {
+                const keys = dateGroups[date];
+                let absences = 0, lates = 0;
+                
+                keys.forEach(key => {
+                    const value = localStorage.getItem(key);
+                    if (value === 'absent') absences++;
+                    else if (value === 'late') lates++;
+                });
+                
+                if (absences > 0 || lates > 0) {
+                    const dateObj = new Date(date + 'T00:00:00');
+                    const item = document.createElement('div');
+                    item.className = 'history-item';
+                    item.innerHTML = `
+                        <div class="history-date">${formatDate(dateObj)}</div>
+                        <div class="history-stats">${absences} falta(s), ${lates} retraso(s)</div>
+                    `;
+                    item.addEventListener('click', () => showDetail(date));
+                    historyContainer.appendChild(item);
+                }
+            });
+        }
+        
+        function showDetail(date) {
+            const allKeys = Object.keys(localStorage);
+            const dayKeys = allKeys.filter(k => k.endsWith(date));
+            
+            const dateObj = new Date(date + 'T00:00:00');
+            detailDate.textContent = formatDate(dateObj);
+            
+            let html = '<div>';
+            
+            Object.keys(groups).forEach(group => {
+                const groupKeys = dayKeys.filter(k => k.startsWith(group));
+                const absences = groupKeys.filter(k => localStorage.getItem(k) === 'absent');
+                const lates = groupKeys.filter(k => localStorage.getItem(k) === 'late');
+                
+                if (absences.length > 0 || lates.length > 0) {
+                    html += `<div style="margin-bottom: 1rem;"><strong style="color: #333;">${group}</strong>`;
+                    
+                    if (absences.length > 0) {
+                        html += '<div style="margin-top: 0.5rem;"><span style="color: #ef4444; font-weight: 500;">Faltas:</span><ul style="list-style: none; padding-left: 0; margin-top: 0.25rem;">';
+                        absences.forEach(k => {
+                            const student = k.replace(group + '_', '').replace('_' + date, '');
+                            html += `<li style="font-size: 13px; color: #666; padding: 2px 0;">• ${student}</li>`;
+                        });
+                        html += '</ul></div>';
+                    }
+                    
+                    if (lates.length > 0) {
+                        html += '<div style="margin-top: 0.5rem;"><span style="color: #f59e0b; font-weight: 500;">Retrasos:</span><ul style="list-style: none; padding-left: 0; margin-top: 0.25rem;">';
+                        lates.forEach(k => {
+                            const student = k.replace(group + '_', '').replace('_' + date, '');
+                            html += `<li style="font-size: 13px; color: #666; padding: 2px 0;">• ${student}</li>`;
+                        });
+                        html += '</ul></div>';
+                    }
+                    
+                    html += '</div>';
+                }
+            });
+            
+            html += '</div>';
+            detailContent.innerHTML = html;
+            detailModal.classList.add('active');
+        }
+        
+        function closeDetailModal() {
+            detailModal.classList.remove('active');
+        }
+        
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                e.target.classList.add('active');
+                const tab = e.target.dataset.tab;
+                document.getElementById(tab).classList.add('active');
+                
+                if (tab === 'historico') {
+                    loadHistory();
+                }
+            });
+        });
+        
+        groupSelect.addEventListener('change', (e) => {
+            if (e.target.value) {
+                emptyState.style.display = 'none';
+                studentsContainer.style.display = 'block';
+                generateStudentRows(e.target.value);
+            } else {
+                emptyState.style.display = 'block';
+                studentsContainer.style.display = 'none';
+            }
+        });
+        
+        downloadBtn.addEventListener('click', () => {
+            const today = new Date().toISOString().split('T')[0];
+            const selectedGroup = groupSelect.value;
+            const students = groups[selectedGroup];
+            
+            let csvContent = 'Fecha,Grupo,Alumno,Estado\n';
+            
+            students.forEach(student => {
+                const storageName = `${selectedGroup}_${student}_${today}`;
+                let state = '';
+                try {
+                    const stored = localStorage.getItem(storageName);
+                    if (stored === 'absent') state = 'Falta';
+                    else if (stored === 'late') state = 'Retraso';
+                } catch (e) {}
+                
+                if (state) {
+                    csvContent += `"${today}","${selectedGroup}","${student}","${state}"\n`;
+                }
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `asistencia_${today}.csv`);
+            link.click();
+        });
+        
+        detailModal.addEventListener('click', (e) => {
+            if (e.target === detailModal) closeDetailModal();
+        });
+        
+        initializeDateAndGroups();
+    </script>
+</body>
+</html>
