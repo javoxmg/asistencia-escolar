@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
     <meta name="description" content="App para pasar lista de asistencia">
-    <link rel="manifest" href="manifest.json?v=3">
+    <link rel="manifest" href="manifest.json?v=4">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <title>Asistencia Escolar</title>
@@ -280,6 +280,9 @@
         </div>
         
         <div id="historico" class="tab-content">
+            <div class="button-group">
+                <button id="downloadHistoryBtn">📥 Descargar histórico completo</button>
+            </div>
             <div id="historyContainer"></div>
         </div>
     </div>
@@ -298,7 +301,7 @@
         if ('serviceWorker' in navigator) {
             // updateViaCache: 'none' evita que el navegador sirva una copia cacheada
             // antigua del service worker al comprobar actualizaciones
-            navigator.serviceWorker.register('sw.js?v=3', { updateViaCache: 'none' });
+            navigator.serviceWorker.register('sw.js?v=4', { updateViaCache: 'none' });
         }
         
         const groups = {
@@ -316,6 +319,7 @@
         const studentsContainer = document.getElementById('studentsContainer');
         const downloadBtn = document.getElementById('downloadBtn');
         const historyContainer = document.getElementById('historyContainer');
+        const downloadHistoryBtn = document.getElementById('downloadHistoryBtn');
         const detailModal = document.getElementById('detailModal');
         const detailDate = document.getElementById('detailDate');
         const detailContent = document.getElementById('detailContent');
@@ -550,7 +554,58 @@
         detailModal.addEventListener('click', (e) => {
             if (e.target === detailModal) closeDetailModal();
         });
-        
+
+        downloadHistoryBtn.addEventListener('click', () => {
+            const allKeys = Object.keys(localStorage);
+            const rows = [];
+
+            Object.keys(groups).forEach(group => {
+                const prefix = group + '_';
+                allKeys.forEach(key => {
+                    if (!key.startsWith(prefix)) return;
+                    const rest = key.slice(prefix.length); // "alumno_fecha"
+                    const dateMatch = rest.match(/_(\d{4}-\d{2}-\d{2})$/);
+                    if (!dateMatch) return;
+                    const date = dateMatch[1];
+                    const student = rest.slice(0, rest.length - dateMatch[0].length);
+                    const value = localStorage.getItem(key);
+
+                    let estado = '';
+                    if (value === 'present') estado = 'Presente';
+                    else if (value === 'absent') estado = 'Falta';
+                    else if (value === 'late') estado = 'Retraso';
+
+                    if (estado) {
+                        rows.push({ date, group, student, estado });
+                    }
+                });
+            });
+
+            if (rows.length === 0) {
+                alert('No hay datos guardados todavía.');
+                return;
+            }
+
+            rows.sort((a, b) => {
+                if (a.date !== b.date) return b.date.localeCompare(a.date);
+                if (a.group !== b.group) return a.group.localeCompare(b.group);
+                return a.student.localeCompare(b.student);
+            });
+
+            let csvContent = 'Fecha,Grupo,Alumno,Estado\n';
+            rows.forEach(r => {
+                csvContent += `"${r.date}","${r.group}","${r.student}","${r.estado}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            const today = new Date().toISOString().split('T')[0];
+            link.setAttribute('download', `historico_completo_${today}.csv`);
+            link.click();
+        });
+
         initializeDateAndGroups();
     </script>
 </body>
