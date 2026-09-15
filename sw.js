@@ -1,8 +1,8 @@
-const CACHE_NAME = 'asistencia-v2';
+const CACHE_NAME = 'asistencia-v3';
 const FILES_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  './',
+  './index.html',
+  './manifest.json'
 ];
 
 self.addEventListener('install', event => {
