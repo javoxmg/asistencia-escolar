@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
     <meta name="description" content="App para pasar lista de asistencia">
-    <link rel="manifest" href="manifest.json?v=8">
+    <link rel="manifest" href="manifest.json?v=9">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <title>Asistencia Escolar</title>
@@ -256,8 +256,11 @@
         
         <div id="lista" class="tab-content active">
             <div class="form-group">
-                <label>Fecha</label>
-                <input type="date" id="dateInput">
+                <label>Fecha (toca para cambiar)</label>
+                <div id="dateInputWrapper" style="position: relative; cursor: pointer;">
+                    <input type="date" id="dateInput" style="cursor: pointer; padding-right: 36px;">
+                    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 16px;">📅</span>
+                </div>
                 <div id="dateWarning" style="display: none; margin-top: 6px; font-size: 12px; color: #f59e0b; font-weight: 500;">
                     ⚠️ Estás editando un día distinto a hoy
                 </div>
@@ -306,7 +309,7 @@
         if ('serviceWorker' in navigator) {
             // updateViaCache: 'none' evita que el navegador sirva una copia cacheada
             // antigua del service worker al comprobar actualizaciones
-            navigator.serviceWorker.register('sw.js?v=8', { updateViaCache: 'none' });
+            navigator.serviceWorker.register('sw.js?v=9', { updateViaCache: 'none' });
         }
         
         const groups = {
@@ -318,6 +321,7 @@
         };
         
         const dateInput = document.getElementById('dateInput');
+        const dateInputWrapper = document.getElementById('dateInputWrapper');
         const dateWarning = document.getElementById('dateWarning');
         const groupSelect = document.getElementById('groupSelect');
         const studentsList = document.getElementById('studentsList');
@@ -542,6 +546,20 @@
             updateDateWarning();
             if (groupSelect.value) {
                 generateStudentRows(groupSelect.value);
+            }
+        });
+
+        // Algunos móviles no muestran claramente que el campo de fecha es tocable.
+        // Forzamos la apertura del selector nativo al tocar en cualquier parte del recuadro.
+        dateInputWrapper.addEventListener('click', () => {
+            try {
+                if (typeof dateInput.showPicker === 'function') {
+                    dateInput.showPicker();
+                } else {
+                    dateInput.focus();
+                }
+            } catch (e) {
+                dateInput.focus();
             }
         });
 
