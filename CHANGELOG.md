@@ -46,3 +46,9 @@ Estos cambios se hicieron antes de que existiera el número de versión visible 
 ## v0.4 — 16 de septiembre de 2026
 
 - Extendido el uso de la paleta de colores del instituto: fondo de la app con un azul muy claro (en vez del gris genérico anterior), y bordes de tarjetas, botones y campos con un tono azul suave a juego, en vez de los grises por defecto.
+
+---
+
+## v0.5 — 16 de septiembre de 2026
+
+- La app detecta automáticamente, al abrirla, qué grupo toca según el horario semanal de Javier y el día/hora actual, y lo preselecciona en el desplegable (sin necesidad de elegirlo a mano). Si es recreo, hora libre o fuera de horario lectivo, no preselecciona nada, como antes. Se puede cambiar el grupo manualmente en cualquier momento.

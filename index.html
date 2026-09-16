@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0D2551">
     <meta name="description" content="AsistenciApp - app para pasar lista de asistencia">
-    <link rel="manifest" href="manifest.json?v=14">
+    <link rel="manifest" href="manifest.json?v=15">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <title>AsistenciApp</title>
@@ -311,13 +311,13 @@
     
     <script>
         // Cambia solo este número al hacer una actualización relevante de la app.
-        const APP_VERSION = '0.4';
+        const APP_VERSION = '0.5';
         const APP_AUTHOR = 'Javier Martín';
 
         if ('serviceWorker' in navigator) {
             // updateViaCache: 'none' evita que el navegador sirva una copia cacheada
             // antigua del service worker al comprobar actualizaciones
-            navigator.serviceWorker.register('sw.js?v=14', { updateViaCache: 'none' });
+            navigator.serviceWorker.register('sw.js?v=15', { updateViaCache: 'none' });
         }
         
         const groups = {
@@ -327,7 +327,39 @@
             "Conocimiento de las Matemáticas - 03A, 03D": ["AMOR ROJO, NEREA", "BOUTACHKOURT ZAOUATI, ABDELKARIM", "CABRERA ROJO, HUGO", "CEINOS ARCONADA, SARA", "GUANTES MERINO, PAOLA", "GUTIÉRREZ IGLESIAS, ROBERTO", "ORE HUANCA, IKER ISMAEL", "ROJO PÉREZ, MIRIAM", "SANZ CANO, INÉS", "TORIBIO CARDEÑOSO, IVÁN"],
             "Conocimiento de las Matemáticas - 02B, 02D": ["ACOSTA PEDROSA, GABRIEL", "ANDRÉS GARCÍA, MANUEL", "EL MAHFOUDI BRAHIM, BRAHIM", "GABARRE JIMÉNEZ, REINALDO", "GARCÍA FRÍAS, IZAN", "GONZALEZ GUTIÉRREZ, ALEJANDRO", "POLVOROSA GÓMEZ, SAÚL", "POZA VALLE, RUBÉN", "RODRÍGUEZ MORÁN, LUCAS", "RUBIO MORO, ÁLVARO"]
         };
-        
+
+        // Horario semanal de Javier: qué grupo le toca en cada franja horaria.
+        // Los huecos sin entrada (guardias, horas libres, recreo) no preseleccionan ningún grupo.
+        // getDay() de JavaScript: 0 = domingo, 1 = lunes, 2 = martes, 3 = miércoles, 4 = jueves, 5 = viernes, 6 = sábado.
+        const schedule = {
+            1: [ // Lunes
+                { start: '08:30', end: '09:20', group: 'Conocimiento de las Matemáticas - 03A, 03D' },
+                { start: '09:25', end: '10:15', group: 'Matemáticas II - 2BCB' },
+                { start: '11:35', end: '12:25', group: 'Matemáticas Aplicadas a las Ciencias Sociales I - 1BHS' }
+            ],
+            2: [ // Martes
+                { start: '08:30', end: '09:20', group: 'Conocimiento de las Matemáticas - 02B, 02D' },
+                { start: '10:20', end: '11:10', group: 'Matemáticas Aplicadas a las Ciencias Sociales I - 1BHS' },
+                { start: '11:35', end: '12:25', group: 'Matemáticas II - 2BCB' },
+                { start: '12:30', end: '13:20', group: 'Matemáticas - 03A, 03B' }
+            ],
+            3: [ // Miércoles
+                { start: '08:30', end: '09:20', group: 'Conocimiento de las Matemáticas - 02B, 02D' },
+                { start: '09:25', end: '10:15', group: 'Conocimiento de las Matemáticas - 03A, 03D' },
+                { start: '12:30', end: '13:20', group: 'Matemáticas - 03A, 03B' }
+            ],
+            4: [ // Jueves
+                { start: '10:20', end: '11:10', group: 'Matemáticas - 03A, 03B' },
+                { start: '11:35', end: '12:25', group: 'Matemáticas Aplicadas a las Ciencias Sociales I - 1BHS' },
+                { start: '12:30', end: '13:20', group: 'Matemáticas II - 2BCB' }
+            ],
+            5: [ // Viernes
+                { start: '09:25', end: '10:15', group: 'Matemáticas II - 2BCB' },
+                { start: '10:20', end: '11:10', group: 'Matemáticas Aplicadas a las Ciencias Sociales I - 1BHS' },
+                { start: '11:35', end: '12:25', group: 'Matemáticas - 03A, 03B' }
+            ]
+        };
+
         const appVersion = document.getElementById('appVersion');
         const dateInput = document.getElementById('dateInput');
         const dateInputWrapper = document.getElementById('dateInputWrapper');
@@ -358,6 +390,25 @@
             dateWarning.style.display = (dateInput.value !== getTodayISO()) ? 'block' : 'none';
         }
 
+        function getCurrentTimeHHMM() {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            return `${hh}:${mm}`;
+        }
+
+        // Devuelve el grupo que toca ahora mismo según el horario, o null si no hay
+        // clase en este momento (recreo, hora libre, fuera de horario o fin de semana).
+        function getScheduledGroupNow() {
+            const now = new Date();
+            const daySlots = schedule[now.getDay()];
+            if (!daySlots) return null;
+
+            const nowHHMM = getCurrentTimeHHMM();
+            const slot = daySlots.find(s => nowHHMM >= s.start && nowHHMM < s.end);
+            return slot ? slot.group : null;
+        }
+
         function initializeDateAndGroups() {
             dateInput.value = getTodayISO();
 
@@ -370,6 +421,14 @@
 
             updateDateWarning();
             appVersion.textContent = `v. ${APP_VERSION} · Creada por ${APP_AUTHOR}`;
+
+            // Preselecciona automáticamente el grupo que te toca ahora mismo,
+            // según tu horario. Siempre se puede cambiar a mano en el desplegable.
+            const scheduledGroup = getScheduledGroupNow();
+            if (scheduledGroup && groups[scheduledGroup]) {
+                groupSelect.value = scheduledGroup;
+                groupSelect.dispatchEvent(new Event('change'));
+            }
         }
 
         function generateStudentRows(group) {
