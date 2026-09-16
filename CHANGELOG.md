@@ -40,3 +40,9 @@ Estos cambios se hicieron antes de que existiera el número de versión visible 
 - Añadido el logo del IES Virgen de la Calle en la cabecera, centrado sobre el título.
 - El título "AsistenciApp" ahora aparece centrado arriba del todo; el mensaje de versión ("v. X.X · Creada por Javier Martín") se ha movido al final de la pantalla, también centrado.
 - Aplicada la paleta de colores del logo del instituto (azul marino `#0D2551` y azul claro `#3A6A9B`) a la pestaña activa, al color del tema del navegador y a los iconos de la app instalada.
+
+---
+
+## v0.4 — 16 de septiembre de 2026
+
+- Extendido el uso de la paleta de colores del instituto: fondo de la app con un azul muy claro (en vez del gris genérico anterior), y bordes de tarjetas, botones y campos con un tono azul suave a juego, en vez de los grises por defecto.
