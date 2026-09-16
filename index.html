@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#0D2551">
     <meta name="description" content="AsistenciApp - app para pasar lista de asistencia">
-    <link rel="manifest" href="manifest.json?v=12">
+    <link rel="manifest" href="manifest.json?v=13">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <title>AsistenciApp</title>
@@ -57,8 +57,8 @@
         }
         
         .tab-btn.active {
-            color: #3b82f6;
-            border-bottom-color: #3b82f6;
+            color: #0D2551;
+            border-bottom-color: #3A6A9B;
         }
         
         .tab-content {
@@ -245,9 +245,9 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1 style="font-size: 24px; margin-bottom: 0.5rem;">AsistenciApp</h1>
+            <img src="logo-ies.png" alt="Logo IES Virgen de la Calle" style="display: block; margin: 0 auto 0.75rem; height: 56px;">
+            <h1 style="font-size: 24px; margin-bottom: 0.5rem; text-align: center;">AsistenciApp</h1>
             <p style="color: #666; font-size: 14px;">Gestiona la asistencia de tus alumnos</p>
-            <p id="appVersion" style="color: #aaa; font-size: 11px; margin-top: 0.5rem;"></p>
         </div>
 
         <div class="tabs">
@@ -295,8 +295,10 @@
             </div>
             <div id="historyContainer"></div>
         </div>
+
+        <p id="appVersion" style="text-align: center; color: #aaa; font-size: 11px; margin-top: 1.5rem; padding-bottom: 0.5rem;"></p>
     </div>
-    
+
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -309,13 +311,13 @@
     
     <script>
         // Cambia solo este número al hacer una actualización relevante de la app.
-        const APP_VERSION = '0.2';
+        const APP_VERSION = '0.3';
         const APP_AUTHOR = 'Javier Martín';
 
         if ('serviceWorker' in navigator) {
             // updateViaCache: 'none' evita que el navegador sirva una copia cacheada
             // antigua del service worker al comprobar actualizaciones
-            navigator.serviceWorker.register('sw.js?v=12', { updateViaCache: 'none' });
+            navigator.serviceWorker.register('sw.js?v=13', { updateViaCache: 'none' });
         }
         
         const groups = {

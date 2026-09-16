@@ -32,3 +32,11 @@ Estos cambios se hicieron antes de que existiera el número de versión visible 
 ## v0.2 — 16 de septiembre de 2026
 
 - La app pasa a llamarse oficialmente **AsistenciApp** en todos los sitios: título de la pestaña, cabecera de la pantalla de inicio, y nombre mostrado al instalarla en el móvil (`manifest.json`).
+
+---
+
+## v0.3 — 16 de septiembre de 2026
+
+- Añadido el logo del IES Virgen de la Calle en la cabecera, centrado sobre el título.
+- El título "AsistenciApp" ahora aparece centrado arriba del todo; el mensaje de versión ("v. X.X · Creada por Javier Martín") se ha movido al final de la pantalla, también centrado.
+- Aplicada la paleta de colores del logo del instituto (azul marino `#0D2551` y azul claro `#3A6A9B`) a la pestaña activa, al color del tema del navegador y a los iconos de la app instalada.

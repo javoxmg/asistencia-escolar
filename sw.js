@@ -1,8 +1,9 @@
-const CACHE_NAME = 'asistencia-v12';
+const CACHE_NAME = 'asistencia-v13';
 const FILES_TO_CACHE = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './logo-ies.png'
 ];
 
 self.addEventListener('install', event => {
