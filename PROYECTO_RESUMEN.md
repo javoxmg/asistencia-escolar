@@ -6,6 +6,21 @@ App Progressive Web App (PWA) para gestionar la asistencia de alumnos en clase. 
 
 **Estado:** Desplegado en GitHub Pages y en producción
 
+**Versión actual de la app:** 0.1 (visible en la propia pantalla de inicio de la app, debajo del título)
+
+---
+
+## Sistema de versiones (IMPORTANTE para futuras sesiones)
+
+A partir de la versión 0.1 (16 de septiembre de 2026), la app muestra su número de versión directamente en la pantalla de inicio: **"AsistenciApp - v. X.X · Creada por Javier Martín"**.
+
+**Regla a seguir en cada cambio futuro:**
+1. Cada vez que se haga un cambio relevante en el código, hay que **subir el número de `APP_VERSION`** en `index.html` (busca la constante `const APP_VERSION = '0.1';` cerca del principio del `<script>`).
+2. El objetivo de esto es que Javier, con solo mirar la pantalla de inicio de la app instalada en su móvil, pueda saber si ya tiene la última versión desplegada o si todavía le falta actualizarse (recordemos que las PWA a veces tardan en refrescar la caché). Esto es independiente de si el último cambio funciona bien o no — solo indica qué versión de código tiene cargada.
+3. Incrementos pequeños (arreglos, ajustes menores) → sube el segundo número (0.1 → 0.2 → 0.3...).
+4. Cambios grandes o un conjunto amplio de funcionalidades nuevas → se puede saltar a la siguiente versión "entera" (0.9 → 1.0), a criterio del asistente.
+5. No olvidar subir también el número de cache-busting (`manifest.json?v=X` y `sw.js?v=X` en `index.html`, y `CACHE_NAME` en `sw.js`) en cada despliegue, como se viene haciendo desde antes — son cosas distintas: el cache-busting fuerza la actualización técnica, y `APP_VERSION` es la etiqueta visible para Javier.
+
 ---
 
 ## Funcionalidades Implementadas
@@ -239,6 +254,6 @@ Si necesitas:
 
 ---
 
-**Última actualización:** 15 de septiembre de 2026  
+**Última actualización:** 16 de septiembre de 2026  
 **Estado:** Producción  
-**Versión:** 1.1 (añadido botón "Pasar Lista" para marcado automático de presentes)
+**Versión de la app (visible en pantalla):** 0.1 — botones "Pasar Lista" y "Volver" separados, selector de fecha para corregir días anteriores, y versión visible en pantalla de inicio

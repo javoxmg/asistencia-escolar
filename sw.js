@@ -1,4 +1,4 @@
-const CACHE_NAME = 'asistencia-v10';
+const CACHE_NAME = 'asistencia-v11';
 const FILES_TO_CACHE = [
   './',
   './index.html',

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
     <meta name="description" content="App para pasar lista de asistencia">
-    <link rel="manifest" href="manifest.json?v=10">
+    <link rel="manifest" href="manifest.json?v=11">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <title>Asistencia Escolar</title>
@@ -247,8 +247,9 @@
         <div class="header">
             <h1 style="font-size: 24px; margin-bottom: 0.5rem;">Asistencia Escolar</h1>
             <p style="color: #666; font-size: 14px;">Gestiona la asistencia de tus alumnos</p>
+            <p id="appVersion" style="color: #aaa; font-size: 11px; margin-top: 0.5rem;"></p>
         </div>
-        
+
         <div class="tabs">
             <button class="tab-btn active" data-tab="lista">Pasar Lista</button>
             <button class="tab-btn" data-tab="historico">Histórico</button>
@@ -307,10 +308,14 @@
     </div>
     
     <script>
+        // Cambia solo este número al hacer una actualización relevante de la app.
+        const APP_VERSION = '0.1';
+        const APP_AUTHOR = 'Javier Martín';
+
         if ('serviceWorker' in navigator) {
             // updateViaCache: 'none' evita que el navegador sirva una copia cacheada
             // antigua del service worker al comprobar actualizaciones
-            navigator.serviceWorker.register('sw.js?v=10', { updateViaCache: 'none' });
+            navigator.serviceWorker.register('sw.js?v=11', { updateViaCache: 'none' });
         }
         
         const groups = {
@@ -321,6 +326,7 @@
             "Conocimiento de las Matemáticas - 02B, 02D": ["ACOSTA PEDROSA, GABRIEL", "ANDRÉS GARCÍA, MANUEL", "EL MAHFOUDI BRAHIM, BRAHIM", "GABARRE JIMÉNEZ, REINALDO", "GARCÍA FRÍAS, IZAN", "GONZALEZ GUTIÉRREZ, ALEJANDRO", "POLVOROSA GÓMEZ, SAÚL", "POZA VALLE, RUBÉN", "RODRÍGUEZ MORÁN, LUCAS", "RUBIO MORO, ÁLVARO"]
         };
         
+        const appVersion = document.getElementById('appVersion');
         const dateInput = document.getElementById('dateInput');
         const dateInputWrapper = document.getElementById('dateInputWrapper');
         const dateWarning = document.getElementById('dateWarning');
@@ -361,6 +367,7 @@
             });
 
             updateDateWarning();
+            appVersion.textContent = `AsistenciApp - v. ${APP_VERSION} · Creada por ${APP_AUTHOR}`;
         }
 
         function generateStudentRows(group) {
