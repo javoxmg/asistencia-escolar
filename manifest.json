@@ -1,7 +1,7 @@
 {
-  "name": "Asistencia Escolar",
-  "short_name": "Asistencia",
-  "description": "App para gestionar la asistencia de alumnos en clase",
+  "name": "AsistenciApp",
+  "short_name": "AsistenciApp",
+  "description": "AsistenciApp - app para gestionar la asistencia de alumnos en clase",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

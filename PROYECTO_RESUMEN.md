@@ -1,4 +1,4 @@
-# Proyecto: App PWA de Asistencia Escolar
+# Proyecto: AsistenciApp (App PWA de Asistencia Escolar)
 
 ## Resumen Ejecutivo
 

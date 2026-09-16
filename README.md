@@ -1,4 +1,4 @@
-# App Asistencia Escolar - PWA
+# AsistenciApp - PWA
 
 Esta es una Progressive Web App (PWA) para gestionar la asistencia de alumnos en clase.
 

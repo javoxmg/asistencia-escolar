@@ -1,6 +1,6 @@
 # Changelog — AsistenciApp
 
-Aquí se recogen los cambios de cada versión. El número de versión coincide con el que aparece en la pantalla de inicio de la app ("AsistenciApp - v. X.X").
+Aquí se recogen los cambios de cada versión. El número de versión coincide con el que aparece en la pantalla de inicio de la app ("v. X.X").
 
 ---
 
@@ -26,3 +26,9 @@ Estos cambios se hicieron antes de que existiera el número de versión visible 
 
 - Añadido el nombre de la app y el número de versión visible en la pantalla de inicio: **"AsistenciApp - v. 0.1 · Creada por Javier Martín"**. A partir de esta versión, cada cambio relevante incrementará este número, para poder comprobar de un vistazo si el móvil tiene ya la última versión desplegada.
 - Creado este `CHANGELOG.md` para llevar un registro ordenado de los cambios por versión.
+
+---
+
+## v0.2 — 16 de septiembre de 2026
+
+- La app pasa a llamarse oficialmente **AsistenciApp** en todos los sitios: título de la pestaña, cabecera de la pantalla de inicio, y nombre mostrado al instalarla en el móvil (`manifest.json`).
