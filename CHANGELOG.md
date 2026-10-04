@@ -52,3 +52,9 @@ Estos cambios se hicieron antes de que existiera el número de versión visible 
 ## v0.5 — 16 de septiembre de 2026
 
 - La app detecta automáticamente, al abrirla, qué grupo toca según el horario semanal de Javier y el día/hora actual, y lo preselecciona en el desplegable (sin necesidad de elegirlo a mano). Si es recreo, hora libre o fuera de horario lectivo, no preselecciona nada, como antes. Se puede cambiar el grupo manualmente en cualquier momento.
+
+---
+
+## v0.6 — 4 de octubre de 2026
+
+- Actualizadas las listas de alumnos según las capturas de las listas oficiales. 1BHS: 28 → 23 alumnos. Matemáticas 03A/03B: 19 → 21 (altas: Gabarri Jiménez, Fernando; Soto García, Guzmán). Conocimiento de las Matemáticas 03A/03D: 10 → 13 (altas: Gabarre Fernández, Rafael; González Hamzaoui, Erika; Rojas Jaimes, Bryan Estiven). Conocimiento de las Matemáticas 02B/02D: 10 → 9 (baja: Andrés García, Manuel). 2BCB sin cambios (9). El histórico anterior no se toca.
