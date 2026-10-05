@@ -71,3 +71,9 @@ Estos cambios se hicieron antes de que existiera el número de versión visible 
 ## v0.8 — 5 de octubre de 2026
 
 - La **hora lectiva** ya no es un selector libre: solo puede ser una de las del horario. Si el grupo tiene una sola clase ese día, se muestra la hora (por ejemplo "08:30 - 09:20") sin nada que elegir. Si tiene varias, se elige entre ellas. Si no tiene clase ese día según el horario, se indica y no se guarda hora.
+
+---
+
+## v0.9 — 5 de octubre de 2026
+
+- Corregido un fallo del service worker que podía dejar al móvil atascado en una versión vieja de la app aunque ya estuviera publicada la nueva (la copia guardada podía salir de la caché del navegador en vez de la web). Ahora, al instalarse, descarga los archivos saltándose esa caché, y la app carga primero la versión publicada y solo usa la copia guardada si no hay conexión (o tarda más de 4 s). Sigue funcionando sin conexión.
