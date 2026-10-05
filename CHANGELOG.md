@@ -65,3 +65,9 @@ Estos cambios se hicieron antes de que existiera el número de versión visible 
 
 - Nueva opción **Hora lectiva** en la pantalla de pasar lista. La app la rellena sola según el horario (y la hora actual si hay varias clases ese día para el grupo) y se puede corregir a mano. Se guarda junto a las faltas y retrasos de cada grupo y día.
 - Los CSV (del día y el histórico completo) incluyen ahora la columna **Hora**: `Fecha, Hora, Grupo, Alumno, Estado`. Es necesaria para el futuro volcado automático a STILUS, que necesita saber en qué sesión se produjo cada falta. Los registros antiguos salen con la hora vacía.
+
+---
+
+## v0.8 — 5 de octubre de 2026
+
+- La **hora lectiva** ya no es un selector libre: solo puede ser una de las del horario. Si el grupo tiene una sola clase ese día, se muestra la hora (por ejemplo "08:30 - 09:20") sin nada que elegir. Si tiene varias, se elige entre ellas. Si no tiene clase ese día según el horario, se indica y no se guarda hora.

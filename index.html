@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0D2551">
     <meta name="description" content="AsistenciApp - app para pasar lista de asistencia">
-    <link rel="manifest" href="manifest.json?v=17">
+    <link rel="manifest" href="manifest.json?v=18">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <title>AsistenciApp</title>
@@ -277,14 +277,8 @@
             <div id="studentsContainer" style="display: none;">
                 <div class="form-group">
                     <label>Hora lectiva</label>
-                    <select id="horaSelect">
-                        <option value="">Sin indicar</option>
-                        <option value="08:30">1ª · 08:30</option>
-                        <option value="09:25">2ª · 09:25</option>
-                        <option value="10:20">3ª · 10:20</option>
-                        <option value="11:35">4ª · 11:35</option>
-                        <option value="12:30">5ª · 12:30</option>
-                    </select>
+                    <div id="horaText" style="font-size: 14px; color: #0D2551; font-weight: 500;"></div>
+                    <select id="horaSelect" style="display: none;"></select>
                 </div>
                 <div class="button-group">
                     <button id="markAttendanceBtn" style="background: #10b981; color: white; border-color: #10b981;">✅ Pasar Lista</button>
@@ -322,13 +316,13 @@
     
     <script>
         // Cambia solo este número al hacer una actualización relevante de la app.
-        const APP_VERSION = '0.7';
+        const APP_VERSION = '0.8';
         const APP_AUTHOR = 'Javier Martín';
 
         if ('serviceWorker' in navigator) {
             // updateViaCache: 'none' evita que el navegador sirva una copia cacheada
             // antigua del service worker al comprobar actualizaciones
-            navigator.serviceWorker.register('sw.js?v=17', { updateViaCache: 'none' });
+            navigator.serviceWorker.register('sw.js?v=18', { updateViaCache: 'none' });
         }
         
         const groups = {
@@ -377,6 +371,7 @@
         const dateWarning = document.getElementById('dateWarning');
         const groupSelect = document.getElementById('groupSelect');
         const horaSelect = document.getElementById('horaSelect');
+        const horaText = document.getElementById('horaText');
         const studentsList = document.getElementById('studentsList');
         const emptyState = document.getElementById('emptyState');
         const studentsContainer = document.getElementById('studentsContainer');
@@ -428,25 +423,50 @@
             return `HORA|${group}|${date}`;
         }
 
-        // Hora que sugiere el horario para ese grupo y día (cadena vacía si no se puede deducir).
-        function suggestHora(group, date) {
+        // Clases que tiene ese grupo ese día según el horario (la hora nunca es libre:
+        // solo puede ser una de las del horario).
+        function slotsFor(group, date) {
             const dayNum = new Date(date + 'T00:00:00').getDay();
-            const slots = (schedule[dayNum] || []).filter(s => s.group === group);
-            if (slots.length === 0) return '';
-            if (slots.length === 1) return slots[0].start;
-            if (date === getTodayISO()) {
-                const now = getCurrentTimeHHMM();
-                const started = slots.filter(s => s.start <= now);
-                if (started.length > 0) return started[started.length - 1].start;
-            }
-            return slots[0].start;
+            return (schedule[dayNum] || []).filter(s => s.group === group);
         }
 
         function refreshHora(group, date) {
+            const slots = slotsFor(group, date);
+            horaSelect.innerHTML = '';
+            slots.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.start;
+                opt.textContent = `${s.start} - ${s.end}`;
+                horaSelect.appendChild(opt);
+            });
+
+            if (slots.length === 0) {
+                horaSelect.style.display = 'none';
+                horaText.textContent = 'Este grupo no tiene clase ese día según tu horario';
+                return;
+            }
+
             let hora = '';
             try { hora = localStorage.getItem(horaKey(group, date)) || ''; } catch (e) {}
-            if (!hora) hora = suggestHora(group, date);
+            if (!slots.some(s => s.start === hora)) {
+                hora = slots[0].start;
+                if (date === getTodayISO()) {
+                    const now = getCurrentTimeHHMM();
+                    const started = slots.filter(s => s.start <= now);
+                    if (started.length > 0) hora = started[started.length - 1].start;
+                }
+            }
             horaSelect.value = hora;
+
+            if (slots.length === 1) {
+                // Una sola clase ese día: no hay nada que elegir, solo se muestra.
+                horaSelect.style.display = 'none';
+                horaText.textContent = `${slots[0].start} - ${slots[0].end}`;
+            } else {
+                // Varias clases el mismo día: eliges entre las del horario.
+                horaSelect.style.display = '';
+                horaText.textContent = 'Este grupo tiene varias clases ese día. Elige la que es:';
+            }
         }
 
         function saveHora(group, date) {
@@ -682,13 +702,7 @@
 
         horaSelect.addEventListener('change', () => {
             const g = groupSelect.value;
-            if (!g) return;
-            const d = dateInput.value || getTodayISO();
-            if (horaSelect.value) {
-                saveHora(g, d);
-            } else {
-                try { localStorage.removeItem(horaKey(g, d)); } catch (e) {}
-            }
+            if (g) saveHora(g, dateInput.value || getTodayISO());
         });
 
         function goToHome() {
