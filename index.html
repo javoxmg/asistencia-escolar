@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0D2551">
     <meta name="description" content="AsistenciApp - app para pasar lista de asistencia">
-    <link rel="manifest" href="manifest.json?v=19">
+    <link rel="manifest" href="manifest.json?v=20">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <title>AsistenciApp</title>
@@ -316,20 +316,20 @@
     
     <script>
         // Cambia solo este número al hacer una actualización relevante de la app.
-        const APP_VERSION = '0.9';
+        const APP_VERSION = '0.10';
         const APP_AUTHOR = 'Javier Martín';
 
         if ('serviceWorker' in navigator) {
             // updateViaCache: 'none' evita que el navegador sirva una copia cacheada
             // antigua del service worker al comprobar actualizaciones
-            navigator.serviceWorker.register('sw.js?v=19', { updateViaCache: 'none' });
+            navigator.serviceWorker.register('sw.js?v=20', { updateViaCache: 'none' });
         }
         
         const groups = {
             "Matemáticas II - 2BCB": ["DE LA FUENTE ALONSO, RUBÉN", "DEL RÍO OLMEDO, CARLA", "DIEZ URCARREGUI, PAOLA", "GÓMEZ GARCÍA, RODRIGO", "MARCOS MANCHÓN, RUBÉN", "MORO EMPERADOR, DIEGO", "PLAZA PÉREZ, JORGE", "PRADOS TORRES, HUGO", "ROMERO MUSLARES, DANIEL"],
             "Matemáticas Aplicadas a las Ciencias Sociales I - 1BHS": ["ALEJO PEREZ, JOSE ROBERTO", "ALONSO ALONSO, MIGUEL", "ATOCHE SENDINO, CARMEN", "AZPELETA GALLARDO, JIMENA", "CALLEJA MIGUEL, ALBA", "CAMPO ÁLVAREZ, THAIS", "CASÍN RUBIO, SAMUEL", "CUESTA MERINO, MARCOS", "DE CASTRO PÉREZ, LEYRE", "DE LA FUENTE ABARQUERO, EMMA", "GARCÍA HERRARTE, NAIRA", "GONZÁLEZ MORENO, NATALIA", "HERRERO DE PRADO, DIEGO", "IGLESIAS MORENO, LUCÍA", "PANIAGUA RESA, LUCIA CARLOTA", "PARDO SOLÁ, NACHO", "PARIENTE ABIA, LUCÍA", "PARIENTE ABIA, ZAIRA", "QUIÑONEZ ÁLVAREZ, DANIEL", "RENEDO VARGAS, ALEJANDRA", "RODRÍGUEZ MARTÍN, EMMA", "RODRÍGUEZ SALAZAR, DOUGLAS YANILO", "ZAPATERO SALVADOR, ADRIANA"],
             "Matemáticas - 03A, 03B": ["ANDRÉS GARCÍA, ALMA", "ANTOLÍN AMOR, IKER", "ANTOLÍN BRAZ, BÁRBARA LINA", "CABRERA ROJO, HUGO", "CALLE VALVERDE, ARIADNE", "CALVO SASTRE, DAKOTA", "CAMPOS CALLEJA, ANDRÉS", "CHOAIBI ALVAREZ, VIDAL", "EL FADILY, ROUMAISSA", "GABARRI JIMÉNEZ, FERNANDO", "GÓMEZ REBOLLEDO, JOEL", "GUTIERREZ IGLESIAS, ROBERTO", "HERRERAS GARCÍA, NAHIA", "LAMNINI KARMOUCHE, RAJAA", "MACHO ARIJA, ROCÍO", "MACHÓN MANGAS, JOEL", "PÉREZ BERNARDO, ELENA", "SALVADOR LÓPEZ, DARÍO", "SOTO GARCÍA, GUZMÁN", "TORIBIO CARDEÑOSO, IVÁN", "ULACIA FERRER, ITZIAR"],
-            "Conocimiento de las Matemáticas - 03A, 03D": ["AMOR ROJO, NEREA", "BOUTACHKOURT ZAOUATI, ABDELKARIM", "CABRERA ROJO, HUGO", "CEINOS ARCONADA, SARA", "GABARRE FERNÁNDEZ, RAFAEL", "GONZÁLEZ HAMZAOUI, ERIKA", "GUANTES MERINO, PAOLA", "GUTIERREZ IGLESIAS, ROBERTO", "ORE HUANCA, IKER ISMAEL", "ROJAS JAIMES, BRYAN ESTIVEN", "ROJO PÉREZ, MIRIAM", "SANZ CANO, INÉS", "TORIBIO CARDEÑOSO, IVÁN"],
+            "Conocimiento de las Matemáticas - 03A, 03D": ["AMOR ROJO, NEREA", "BOUTACHKOURT ZAAOUATI, ABDELKARIM", "CABRERA ROJO, HUGO", "CEINOS ARCONADA, SARA", "GABARRE FERNÁNDEZ, RAFAEL", "GONZÁLEZ HAMZAOUI, ERIKA", "GUANTES MERINO, PAOLA", "GUTIERREZ IGLESIAS, ROBERTO", "ORE HUANCA, IKER ISMAEL", "ROJAS JAIMES, BRYAN ESTIVEN", "ROJO PÉREZ, MIRIAM", "SANZ CANO, INÉS", "TORIBIO CARDEÑOSO, IVÁN"],
             "Conocimiento de las Matemáticas - 02B, 02D": ["ACOSTA PEDROSA, GABRIEL", "EL MAHFOUDI BRAHIM, BRAHIM", "GABARRE JIMÉNEZ, REINALDO", "GARCÍA FRÍAS, IZAN", "GONZÁLEZ GUTIERREZ, ALEJANDRO", "POLVOROSA GÓMEZ, SAÚL", "POZA VALLE, RUBÉN", "RODRÍGUEZ MORÁN, LUCAS", "RUBIO MORO, ALVARO"]
         };
 

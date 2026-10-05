@@ -77,3 +77,9 @@ Estos cambios se hicieron antes de que existiera el número de versión visible 
 ## v0.9 — 5 de octubre de 2026
 
 - Corregido un fallo del service worker que podía dejar al móvil atascado en una versión vieja de la app aunque ya estuviera publicada la nueva (la copia guardada podía salir de la caché del navegador en vez de la web). Ahora, al instalarse, descarga los archivos saltándose esa caché, y la app carga primero la versión publicada y solo usa la copia guardada si no hay conexión (o tarda más de 4 s). Sigue funcionando sin conexión.
+
+---
+
+## v0.10 — 5 de octubre de 2026
+
+- Corregido un apellido mal copiado en la lista de Conocimiento de las Matemáticas 03A/03D: "Boutachkourt **Zaaouati**, Abdelkarim" (antes "Zaouati"). Ahora coincide con STILUS. Las faltas ya guardadas con la grafía antigua siguen en el histórico.
