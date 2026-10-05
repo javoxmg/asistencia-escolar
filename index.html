@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0D2551">
     <meta name="description" content="AsistenciApp - app para pasar lista de asistencia">
-    <link rel="manifest" href="manifest.json?v=16">
+    <link rel="manifest" href="manifest.json?v=17">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <title>AsistenciApp</title>
@@ -275,6 +275,17 @@
             </div>
             
             <div id="studentsContainer" style="display: none;">
+                <div class="form-group">
+                    <label>Hora lectiva</label>
+                    <select id="horaSelect">
+                        <option value="">Sin indicar</option>
+                        <option value="08:30">1ª · 08:30</option>
+                        <option value="09:25">2ª · 09:25</option>
+                        <option value="10:20">3ª · 10:20</option>
+                        <option value="11:35">4ª · 11:35</option>
+                        <option value="12:30">5ª · 12:30</option>
+                    </select>
+                </div>
                 <div class="button-group">
                     <button id="markAttendanceBtn" style="background: #10b981; color: white; border-color: #10b981;">✅ Pasar Lista</button>
                     <button id="downloadBtn">📥 Descargar CSV</button>
@@ -311,13 +322,13 @@
     
     <script>
         // Cambia solo este número al hacer una actualización relevante de la app.
-        const APP_VERSION = '0.6';
+        const APP_VERSION = '0.7';
         const APP_AUTHOR = 'Javier Martín';
 
         if ('serviceWorker' in navigator) {
             // updateViaCache: 'none' evita que el navegador sirva una copia cacheada
             // antigua del service worker al comprobar actualizaciones
-            navigator.serviceWorker.register('sw.js?v=16', { updateViaCache: 'none' });
+            navigator.serviceWorker.register('sw.js?v=17', { updateViaCache: 'none' });
         }
         
         const groups = {
@@ -365,6 +376,7 @@
         const dateInputWrapper = document.getElementById('dateInputWrapper');
         const dateWarning = document.getElementById('dateWarning');
         const groupSelect = document.getElementById('groupSelect');
+        const horaSelect = document.getElementById('horaSelect');
         const studentsList = document.getElementById('studentsList');
         const emptyState = document.getElementById('emptyState');
         const studentsContainer = document.getElementById('studentsContainer');
@@ -409,6 +421,39 @@
             return slot ? slot.group : null;
         }
 
+        // --- Hora lectiva ---
+        // Se guarda una hora por (grupo, fecha) con la clave "HORA|grupo|fecha".
+        // El prefijo "HORA|" evita que se confunda con las claves de alumnos.
+        function horaKey(group, date) {
+            return `HORA|${group}|${date}`;
+        }
+
+        // Hora que sugiere el horario para ese grupo y día (cadena vacía si no se puede deducir).
+        function suggestHora(group, date) {
+            const dayNum = new Date(date + 'T00:00:00').getDay();
+            const slots = (schedule[dayNum] || []).filter(s => s.group === group);
+            if (slots.length === 0) return '';
+            if (slots.length === 1) return slots[0].start;
+            if (date === getTodayISO()) {
+                const now = getCurrentTimeHHMM();
+                const started = slots.filter(s => s.start <= now);
+                if (started.length > 0) return started[started.length - 1].start;
+            }
+            return slots[0].start;
+        }
+
+        function refreshHora(group, date) {
+            let hora = '';
+            try { hora = localStorage.getItem(horaKey(group, date)) || ''; } catch (e) {}
+            if (!hora) hora = suggestHora(group, date);
+            horaSelect.value = hora;
+        }
+
+        function saveHora(group, date) {
+            if (!group || !horaSelect.value) return;
+            try { localStorage.setItem(horaKey(group, date), horaSelect.value); } catch (e) {}
+        }
+
         function initializeDateAndGroups() {
             dateInput.value = getTodayISO();
 
@@ -435,6 +480,7 @@
             studentsList.innerHTML = '';
             const students = groups[group];
             const selectedDate = dateInput.value || getTodayISO();
+            refreshHora(group, selectedDate);
 
             students.forEach((student) => {
                 const storageName = `${group}_${student}_${selectedDate}`;
@@ -467,6 +513,7 @@
                     btn.title = state.value === 'present' ? 'Presente' : state.value === 'absent' ? 'Falta' : 'Retraso';
                     
                     btn.addEventListener('click', () => {
+                        saveHora(group, selectedDate);
                         if (currentState === state.value) {
                             localStorage.removeItem(storageName);
                             currentState = null;
@@ -633,6 +680,17 @@
             }
         });
 
+        horaSelect.addEventListener('change', () => {
+            const g = groupSelect.value;
+            if (!g) return;
+            const d = dateInput.value || getTodayISO();
+            if (horaSelect.value) {
+                saveHora(g, d);
+            } else {
+                try { localStorage.removeItem(horaKey(g, d)); } catch (e) {}
+            }
+        });
+
         function goToHome() {
             groupSelect.value = '';
             dateInput.value = getTodayISO();
@@ -646,6 +704,7 @@
             if (!selectedGroup) return;
             const students = groups[selectedGroup];
             const selectedDate = dateInput.value || getTodayISO();
+            saveHora(selectedGroup, selectedDate);
 
             students.forEach(student => {
                 const storageName = `${selectedGroup}_${student}_${selectedDate}`;
@@ -669,7 +728,9 @@
             const selectedGroup = groupSelect.value;
             const students = groups[selectedGroup];
 
-            let csvContent = 'Fecha,Grupo,Alumno,Estado\n';
+            let csvContent = 'Fecha,Hora,Grupo,Alumno,Estado\n';
+            let horaCsv = '';
+            try { horaCsv = localStorage.getItem(horaKey(selectedGroup, selectedDate)) || ''; } catch (e) {}
 
             students.forEach(student => {
                 const storageName = `${selectedGroup}_${student}_${selectedDate}`;
@@ -681,7 +742,7 @@
                 } catch (e) {}
 
                 if (state) {
-                    csvContent += `"${selectedDate}","${selectedGroup}","${student}","${state}"\n`;
+                    csvContent += `"${selectedDate}","${horaCsv}","${selectedGroup}","${student}","${state}"\n`;
                 }
             });
 
@@ -720,7 +781,9 @@
                     else if (value === 'late') estado = 'Retraso';
 
                     if (estado) {
-                        rows.push({ date, group, student, estado });
+                        let hora = '';
+                        try { hora = localStorage.getItem(horaKey(group, date)) || ''; } catch (e) {}
+                        rows.push({ date, hora, group, student, estado });
                     }
                 });
             });
@@ -736,9 +799,9 @@
                 return a.student.localeCompare(b.student);
             });
 
-            let csvContent = 'Fecha,Grupo,Alumno,Estado\n';
+            let csvContent = 'Fecha,Hora,Grupo,Alumno,Estado\n';
             rows.forEach(r => {
-                csvContent += `"${r.date}","${r.group}","${r.student}","${r.estado}"\n`;
+                csvContent += `"${r.date}","${r.hora}","${r.group}","${r.student}","${r.estado}"\n`;
             });
 
             const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });

@@ -58,3 +58,10 @@ Estos cambios se hicieron antes de que existiera el número de versión visible 
 ## v0.6 — 4 de octubre de 2026
 
 - Actualizadas las listas de alumnos según las capturas de las listas oficiales. 1BHS: 28 → 23 alumnos. Matemáticas 03A/03B: 19 → 21 (altas: Gabarri Jiménez, Fernando; Soto García, Guzmán). Conocimiento de las Matemáticas 03A/03D: 10 → 13 (altas: Gabarre Fernández, Rafael; González Hamzaoui, Erika; Rojas Jaimes, Bryan Estiven). Conocimiento de las Matemáticas 02B/02D: 10 → 9 (baja: Andrés García, Manuel). 2BCB sin cambios (9). El histórico anterior no se toca.
+
+---
+
+## v0.7 — 5 de octubre de 2026
+
+- Nueva opción **Hora lectiva** en la pantalla de pasar lista. La app la rellena sola según el horario (y la hora actual si hay varias clases ese día para el grupo) y se puede corregir a mano. Se guarda junto a las faltas y retrasos de cada grupo y día.
+- Los CSV (del día y el histórico completo) incluyen ahora la columna **Hora**: `Fecha, Hora, Grupo, Alumno, Estado`. Es necesaria para el futuro volcado automático a STILUS, que necesita saber en qué sesión se produjo cada falta. Los registros antiguos salen con la hora vacía.
