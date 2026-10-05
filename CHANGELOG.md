@@ -83,3 +83,9 @@ Estos cambios se hicieron antes de que existiera el número de versión visible 
 ## v0.10 — 5 de octubre de 2026
 
 - Corregido un apellido mal copiado en la lista de Conocimiento de las Matemáticas 03A/03D: "Boutachkourt **Zaaouati**, Abdelkarim" (antes "Zaouati"). Ahora coincide con STILUS. Las faltas ya guardadas con la grafía antigua siguen en el histórico.
+
+---
+
+## v0.11 — 5 de octubre de 2026
+
+- Nuevo botón **📤 Compartir histórico completo** en la pestaña Histórico. Abre el menú de compartir del móvil con el CSV adjunto, para enviarlo en un par de toques a OneDrive, al correo, etc., sin buscarlo en la carpeta de descargas. Si el navegador no permite compartir ficheros, avisa y queda el botón de descargar de siempre.

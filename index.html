@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0D2551">
     <meta name="description" content="AsistenciApp - app para pasar lista de asistencia">
-    <link rel="manifest" href="manifest.json?v=20">
+    <link rel="manifest" href="manifest.json?v=21">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
     <title>AsistenciApp</title>
@@ -296,6 +296,7 @@
         
         <div id="historico" class="tab-content">
             <div class="button-group">
+                <button id="shareHistoryBtn">📤 Compartir histórico completo</button>
                 <button id="downloadHistoryBtn">📥 Descargar histórico completo</button>
             </div>
             <div id="historyContainer"></div>
@@ -316,13 +317,13 @@
     
     <script>
         // Cambia solo este número al hacer una actualización relevante de la app.
-        const APP_VERSION = '0.10';
+        const APP_VERSION = '0.11';
         const APP_AUTHOR = 'Javier Martín';
 
         if ('serviceWorker' in navigator) {
             // updateViaCache: 'none' evita que el navegador sirva una copia cacheada
             // antigua del service worker al comprobar actualizaciones
-            navigator.serviceWorker.register('sw.js?v=20', { updateViaCache: 'none' });
+            navigator.serviceWorker.register('sw.js?v=21', { updateViaCache: 'none' });
         }
         
         const groups = {
@@ -380,6 +381,7 @@
         const backBtn = document.getElementById('backBtn');
         const historyContainer = document.getElementById('historyContainer');
         const downloadHistoryBtn = document.getElementById('downloadHistoryBtn');
+        const shareHistoryBtn = document.getElementById('shareHistoryBtn');
         const detailModal = document.getElementById('detailModal');
         const detailDate = document.getElementById('detailDate');
         const detailContent = document.getElementById('detailContent');
@@ -774,7 +776,8 @@
             if (e.target === detailModal) closeDetailModal();
         });
 
-        downloadHistoryBtn.addEventListener('click', () => {
+        // Construye el CSV del histórico completo. Devuelve null si no hay datos.
+        function buildHistoryCsv() {
             const allKeys = Object.keys(localStorage);
             const rows = [];
 
@@ -802,10 +805,7 @@
                 });
             });
 
-            if (rows.length === 0) {
-                alert('No hay datos guardados todavía.');
-                return;
-            }
+            if (rows.length === 0) return null;
 
             rows.sort((a, b) => {
                 if (a.date !== b.date) return b.date.localeCompare(a.date);
@@ -817,14 +817,48 @@
             rows.forEach(r => {
                 csvContent += `"${r.date}","${r.hora}","${r.group}","${r.student}","${r.estado}"\n`;
             });
+            return csvContent;
+        }
 
-            const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        function historyFileName() {
+            return `historico_completo_${new Date().toISOString().split('T')[0]}.csv`;
+        }
+
+        downloadHistoryBtn.addEventListener('click', () => {
+            const csvContent = buildHistoryCsv();
+            if (!csvContent) {
+                alert('No hay datos guardados todavía.');
+                return;
+            }
+            // El BOM al principio hace que Excel detecte bien las tildes y la Ñ
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            const today = new Date().toISOString().split('T')[0];
-            link.setAttribute('download', `historico_completo_${today}.csv`);
+            link.setAttribute('download', historyFileName());
             link.click();
+        });
+
+        // Abre el menú de compartir del móvil con el CSV adjunto (OneDrive, correo...).
+        shareHistoryBtn.addEventListener('click', async () => {
+            const csvContent = buildHistoryCsv();
+            if (!csvContent) {
+                alert('No hay datos guardados todavía.');
+                return;
+            }
+            const file = new File(['\ufeff' + csvContent], historyFileName(), { type: 'text/csv' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({ files: [file], title: 'Histórico AsistenciApp' });
+                } catch (e) {
+                    // Si cierras el menú de compartir no es un error.
+                    if (e && e.name !== 'AbortError') {
+                        alert('No se ha podido compartir: ' + e.message);
+                    }
+                }
+            } else {
+                alert('Este navegador no permite compartir ficheros. Usa "Descargar histórico completo".');
+            }
         });
 
         initializeDateAndGroups();
